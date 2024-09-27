@@ -1,4 +1,4 @@
-Group Number:
+Group Number: 1
 
 Member-1:
 - Name: Yu Ming Soh
