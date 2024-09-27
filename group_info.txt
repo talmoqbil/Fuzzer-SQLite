@@ -1,21 +1,21 @@
 Group Number:
 
 Member-1:
-- Name:
-- Student ID:
-- Email:
+- Name: Yu Ming Soh
+- Student ID: 1551965
+- Email: yusoh@student.unimelb.edu.au
 
 Member-2:
-- Name:
-- Student ID:
-- Email:
+- Name: Kelven Lai
+- Student ID: 1255199
+- Email: kelven@student.unimelb.edu.au
 
 Member-3:
-- Name:
+- Name: Alwaleed Alkhodairi
 - Student ID:
-- Email:
+- Email: aalkhodairi@student.unimelb.edu.au
 
 Member-4:
-- Name:
-- Student ID:
-- Email:
+- Name: Tariq Almoqbil
+- Student ID: 1580103
+- Email: almoqbilt@student.unimelb.edu.au
