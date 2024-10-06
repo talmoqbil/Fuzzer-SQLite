@@ -73,11 +73,12 @@ class Experiment:
         self.sqlite3 = self.find_sqlite3_executable()
         self.feedback_enabled = feedback_enabled
         self.clean_database = clean_database
+        self.bug_found = 0
 
     def find_sqlite3_executable(self):
         # Try to find sqlite3 in the current working directory or the script's directory
         script_directory = os.path.dirname(os.path.abspath(__file__))
-        script_sqlite3_path = os.path.join(script_directory, "sqlite3")
+        script_sqlite3_path = os.path.join(script_directory, "sqlite3-asan")
 
         if os.path.exists(script_sqlite3_path):
             return script_sqlite3_path
@@ -106,7 +107,16 @@ class Experiment:
         command = f'echo "{sqlcmd}" | {self.sqlite3} {self.db_file}'
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         output, error = process.communicate()
+    
+        if "AddressSanitizer" in str(output):
+            print(output)
 
+            with open("bugs.txt", "a") as file:
+                file.write(sqlcmd)
+                file.write(",")
+                file.write(str(output))
+                file.write("\n")
+                self.bug_found += 1
 
     def get_coverage(self):
         coverage_report_file = "coverage_report.csv"
@@ -153,7 +163,7 @@ class Experiment:
                         print("[UPDATE] New code has been covered. Add the generated input as a new seed.")
                         self.fuzzer.add_seed(new_input)
                 old_cov = new_cov
-                print("Current coverage: " + str(old_cov))
+                print("Current coverage: " + str(old_cov) + ", bug_found: " + str(self.bug_found))
             cov.append(old_cov)
 
         # Do one final coverage measurment (or the only one, if plot_every_x == -1).
