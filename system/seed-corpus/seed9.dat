@@ -1,0 +1,35 @@
+-- Seed 9: Create a table with advanced CHECK constraints
+CREATE TABLE orders (
+    order_id INTEGER PRIMARY KEY, 
+    customer_name TEXT, 
+    total_amount REAL CHECK(total_amount > 0), 
+    order_date DATE,
+    delivery_date DATE CHECK(delivery_date > order_date)
+);
+
+INSERT INTO orders (customer_name, total_amount, order_date, delivery_date) 
+VALUES ('Alice', 100.50, '2023-01-01', '2023-01-05');
+
+-- Attempt to insert invalid data (fails due to CHECK constraint)
+-- INSERT INTO orders (customer_name, total_amount, order_date, delivery_date) 
+-- VALUES ('Bob', -50.00, '2023-01-01', '2023-01-02');
+
+-- Create a view to display orders with total amount over a threshold
+CREATE VIEW expensive_orders AS 
+SELECT customer_name, total_amount FROM orders WHERE total_amount > 50.00;
+
+-- Select from the view
+SELECT * FROM expensive_orders;
+
+-- Drop the view when no longer needed
+DROP VIEW IF EXISTS expensive_orders;
+
+-- Insert additional valid data
+INSERT INTO orders (customer_name, total_amount, order_date, delivery_date) 
+VALUES ('John', 75.00, '2023-02-01', '2023-02-03');
+
+-- Attempt to select from the view after dropping it (this will fail if view is dropped)
+-- SELECT * FROM expensive_orders;
+
+-- Verify the data in the orders table
+SELECT * FROM orders;

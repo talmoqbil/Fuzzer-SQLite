@@ -1,0 +1,34 @@
+-- Seed 8: Creating tables for UNION/INTERSECT/EXCEPT operations
+CREATE TABLE old_employees (
+    emp_id INTEGER PRIMARY KEY, 
+    emp_name TEXT, 
+    department TEXT
+);
+
+CREATE TABLE new_employees (
+    emp_id INTEGER PRIMARY KEY, 
+    emp_name TEXT, 
+    department TEXT
+);
+
+-- Insert data
+INSERT INTO old_employees (emp_id, emp_name, department) 
+VALUES (1, 'John', 'HR'), (2, 'Anna', 'Engineering'), (3, 'Tom', 'Sales');
+
+INSERT INTO new_employees (emp_id, emp_name, department) 
+VALUES (2, 'Anna', 'Engineering'), (3, 'Tom', 'Sales'), (4, 'Susan', 'Marketing');
+
+-- Use UNION to combine both employee tables
+SELECT emp_name, department FROM old_employees
+UNION
+SELECT emp_name, department FROM new_employees;
+
+-- Use INTERSECT to get common employees between old and new
+SELECT emp_name FROM old_employees
+INTERSECT
+SELECT emp_name FROM new_employees;
+
+-- Use EXCEPT to get employees who left the company
+SELECT emp_name FROM old_employees
+EXCEPT
+SELECT emp_name FROM new_employees;

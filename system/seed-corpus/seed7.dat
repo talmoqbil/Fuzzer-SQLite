@@ -1,0 +1,39 @@
+-- Seed7: Create a recursive table structure with foreign keys
+CREATE TABLE category (
+    category_id INTEGER PRIMARY KEY, 
+    category_name TEXT, 
+    parent_category_id INTEGER,
+    FOREIGN KEY(parent_category_id) REFERENCES category(category_id)
+);
+
+CREATE TABLE product (
+    product_id INTEGER PRIMARY KEY, 
+    product_name TEXT, 
+    category_id INTEGER, 
+    price REAL,
+    FOREIGN KEY(category_id) REFERENCES category(category_id)
+);
+
+-- Insert data
+INSERT INTO category (category_name, parent_category_id) 
+VALUES ('Electronics', NULL), ('Phones', 1), ('Laptops', 1);
+
+INSERT INTO product (product_name, category_id, price) 
+VALUES ('iPhone', 2, 999.99), ('MacBook', 3, 1999.99), ('Samsung Galaxy', 2, 899.99);
+
+-- Recursive query to get all subcategories of 'Electronics'
+WITH RECURSIVE subcategories(category_id, category_name) AS (
+    SELECT category_id, category_name FROM category WHERE category_name = 'Electronics'
+    UNION ALL
+    SELECT c.category_id, c.category_name
+    FROM category c
+    INNER JOIN subcategories s ON c.parent_category_id = s.category_id
+)
+SELECT * FROM subcategories;
+
+-- Trigger to automatically update a product's price when inserted
+CREATE TRIGGER price_check 
+AFTER INSERT ON product
+BEGIN
+    UPDATE product SET price = price * 1.05 WHERE price < 500;
+END;

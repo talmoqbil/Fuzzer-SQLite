@@ -1,0 +1,39 @@
+-- Seed 4: Use of aggregate functions, subqueries, and filtering
+CREATE TABLE department (
+    dept_id INTEGER PRIMARY KEY, 
+    dept_name TEXT NOT NULL
+);
+
+-- Create the employee table with a BLOB column for storing profile pictures and a NOT NULL constraint on emp_name and salary
+CREATE TABLE employee (
+    emp_id INTEGER PRIMARY KEY, 
+    emp_name TEXT NOT NULL, 
+    salary REAL NOT NULL, 
+    dept_id INTEGER,
+    profile_picture BLOB  -- Add a BLOB column for storing profile pictures
+);
+
+INSERT INTO department (dept_name) 
+VALUES ('HR'), ('Engineering'), ('Sales');
+
+-- Insert data into the employee table with profile picture data in BLOB format (represented here as X'...' for simplicity)
+INSERT INTO employee (emp_name, salary, dept_id, profile_picture) 
+VALUES 
+('Alice', 60000, 1, X'89504E470D0A1A0A0000000D49484452'), 
+('Bob', 75000, 2, X'89504E470D0A1A0A0000000D49484452'), 
+('Charlie', 90000, 2, X'89504E470D0A1A0A0000000D49484452'), 
+('Diana', 55000, 3, X'89504E470D0A1A0A0000000D49484452'), 
+('Eve', 80000, 3, X'89504E470D0A1A0A0000000D49484452');
+
+-- Query to calculate the number of employees and their total salary by department
+SELECT dept_name, 
+       COUNT(*) AS employee_count, 
+       SUM(salary) AS total_salary,
+       (SELECT MAX(salary) FROM employee WHERE employee.dept_id = department.dept_id) AS highest_salary
+FROM department
+JOIN employee ON department.dept_id = employee.dept_id
+GROUP BY dept_name
+HAVING COUNT(*) > 1  -- Filter departments with more than 1 employee
+ORDER BY total_salary ASC  -- Order by total salary in ascending order
+LIMIT 2 OFFSET 1;  -- Limit the result to 2 rows, skipping the first row
+

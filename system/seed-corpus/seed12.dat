@@ -1,0 +1,42 @@
+-- Seed 12: Create the sales table to showcase CASE and CAST
+CREATE TABLE sales (
+    sale_id INTEGER PRIMARY KEY, 
+    item TEXT, 
+    quantity INTEGER, 
+    sale_amount REAL
+);
+
+INSERT INTO sales (item, quantity, sale_amount) 
+VALUES 
+('Laptop', 5, 5000.00), 
+('Smartphone', 10, 3000.00), 
+('Tablet', 7, 2100.00), 
+('Headphones', 20, 400.00);
+
+-- CASE statement to categorize sales based on total amount
+SELECT item, 
+       CASE 
+           WHEN sale_amount >= 4000 THEN 'High'
+           WHEN sale_amount BETWEEN 2000 AND 4000 THEN 'Medium'
+           ELSE 'Low'
+       END AS sale_category
+FROM sales;
+
+-- Subquery to find the average sale amount and compare it in the main query
+SELECT item, sale_amount, 
+       CASE 
+           WHEN sale_amount > (SELECT AVG(sale_amount) FROM sales) THEN 'Above Average'
+           ELSE 'Below Average'
+       END AS sale_comparison
+FROM sales;
+
+-- Using CAST to convert sale_amount to an integer and categorize it
+SELECT item, 
+       sale_amount, 
+       CAST(sale_amount AS INTEGER) AS sale_amount_int,  -- Casting sale_amount to integer
+       CASE 
+           WHEN CAST(sale_amount AS INTEGER) >= 4000 THEN 'High'
+           WHEN CAST(sale_amount AS INTEGER) BETWEEN 2000 AND 4000 THEN 'Medium'
+           ELSE 'Low'
+       END AS sale_category
+FROM sales;

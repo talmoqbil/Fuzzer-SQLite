@@ -1,1 +1,15 @@
-CREATE TABLE sample_table (id INTEGER PRIMARY KEY, name TEXT, age INTEGER); INSERT INTO sample_table (name, age) VALUES ('Alice', 30), ('Bob', 25), ('Charlie', 35); SELECT name FROM sample_table WHERE age > 30;
+-- Seed 1: Basic table creation and deletion with different types and constraints
+CREATE TABLE employee (emp_id INTEGER PRIMARY KEY, emp_name VARCHAR(100), salary DECIMAL(10, 2), hire_date DATE);
+INSERT INTO employee (emp_name, salary, hire_date) VALUES ('John Doe', 55000.75, '2021-05-10');
+SELECT emp_name, salary FROM employee WHERE hire_date >= '2020-01-01';
+
+-- DROP and RECREATE a new table
+DROP TABLE IF EXISTS employee;
+CREATE TABLE sample_table (id INTEGER PRIMARY KEY, name TEXT, age INTEGER, height REAL);
+INSERT INTO sample_table (name, age, height) VALUES ('Alice', 30, 180.50), ('Bob', 25, 160.00);
+SELECT name, height FROM sample_table WHERE age = 25;
+
+-- Adding Upsert with Conflict Resolution (INSERT OR REPLACE/IGNORE) 
+INSERT OR REPLACE INTO employee (emp_id, emp_name, salary, hire_date) VALUES (1, 'John Doe', 55000.75, '2021-05-10');
+INSERT OR IGNORE INTO employee (emp_id, emp_name, salary, hire_date) VALUES (2, 'Jane Smith', 62000.50, '2020-08-20');
+

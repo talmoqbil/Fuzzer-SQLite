@@ -1,0 +1,90 @@
+-- Seed 5: Window functions, SQL transactions, and CASE statements
+CREATE TABLE author (
+    author_id INTEGER PRIMARY KEY, 
+    author_name TEXT
+);
+
+CREATE TABLE book (
+    book_id INTEGER PRIMARY KEY, 
+    book_title TEXT, 
+    author_id INTEGER, 
+    price REAL
+);
+
+CREATE TABLE borrower (
+    borrower_id INTEGER PRIMARY KEY, 
+    borrower_name TEXT, 
+    borrowed_date DATE, 
+    book_id INTEGER
+);
+
+INSERT INTO author (author_name) 
+VALUES ('J.K. Rowling'), ('George Orwell'), ('J.R.R. Tolkien');
+
+INSERT INTO book (book_title, author_id, price) 
+VALUES 
+('Harry Potter', 1, 20.00), 
+('1984', 2, 15.00), 
+('The Hobbit', 3, 25.00);
+
+INSERT INTO borrower (borrower_name, borrowed_date, book_id) 
+VALUES 
+('Alice', '2023-10-01', 1), 
+('Bob', '2023-09-15', 2), 
+('Charlie', '2023-10-02', 3);
+
+-- Using a window function to rank books by price
+SELECT book_title, price, 
+       RANK() OVER (ORDER BY price DESC) AS price_rank
+FROM book;
+
+-- Using PARTITION BY with ROW_NUMBER to rank books within each author
+SELECT book_title, author_id, price, 
+       ROW_NUMBER() OVER (PARTITION BY author_id ORDER BY price DESC) AS row_num
+FROM book;
+
+-- Using NTILE to divide books into price quartiles (4 groups)
+SELECT book_title, price, 
+       NTILE(4) OVER (ORDER BY price DESC) AS price_quartile
+FROM book;
+
+-- Using SUM as a window function to calculate running total of book prices
+SELECT book_title, price, 
+       SUM(price) OVER (ORDER BY price DESC) AS running_total_price
+FROM book;
+
+-- Adding advanced window functions (LAG, LEAD, FIRST_VALUE, LAST_VALUE)
+SELECT book_title, price, 
+       LAG(price) OVER (ORDER BY price) AS prev_price, 
+       LEAD(price) OVER (ORDER BY price) AS next_price
+FROM book;
+
+SELECT book_title, price, 
+       FIRST_VALUE(price) OVER (ORDER BY price) AS first_price, 
+       LAST_VALUE(price) OVER (ORDER BY price ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS last_price
+FROM book;
+
+-- SQL transaction to update a book's price and insert a new borrower
+BEGIN TRANSACTION;
+    UPDATE book 
+    SET price = price + 5 
+    WHERE book_id = 2;  -- Increasing the price of '1984'
+
+    INSERT INTO borrower (borrower_name, borrowed_date, book_id) 
+    VALUES ('David', '2023-10-03', 2);  -- Adding a new borrower for '1984'
+
+-- Committing the transaction
+COMMIT;
+
+-- Using CASE to categorize books based on price, and LENGTH to calculate the title length
+SELECT book_title, 
+       CASE 
+           WHEN price >= 20 THEN 'Expensive'
+           ELSE 'Affordable'
+       END AS price_category,
+       LENGTH(book_title) AS title_length
+FROM book;
+
+-- Query all data from book and borrower tables to verify the transaction
+SELECT * FROM book;
+SELECT * FROM borrower;

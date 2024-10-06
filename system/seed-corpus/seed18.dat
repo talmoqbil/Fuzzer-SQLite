@@ -1,0 +1,53 @@
+-- Seed 18: Create a table to showcase string and date/time functions
+CREATE TABLE users (
+    user_id INTEGER PRIMARY KEY, 
+    full_name TEXT, 
+    signup_date TEXT  -- Store date as TEXT to manipulate with date/time functions
+);
+
+-- Insert sample user data
+INSERT INTO users (full_name, signup_date) 
+VALUES 
+(' Alice Smith ', '2023-10-01 14:35:20'), 
+('BOB JONES', '2022-05-15 09:20:00'), 
+('charlie Brown', '2021-12-10 18:00:45');
+
+-- Using string functions
+
+-- SUBSTR(): Extract a substring (first name) from the full_name field
+SELECT full_name, SUBSTR(full_name, 1, INSTR(full_name, ' ') - 1) AS first_name 
+FROM users;
+
+-- UPPER() and LOWER(): Convert the full_name to uppercase and lowercase
+SELECT full_name, UPPER(full_name) AS upper_name, LOWER(full_name) AS lower_name 
+FROM users;
+
+-- REPLACE(): Replace spaces with underscores in the full_name
+SELECT full_name, REPLACE(full_name, ' ', '_') AS full_name_with_underscores 
+FROM users;
+
+-- TRIM(): Remove leading and trailing spaces from the full_name
+SELECT full_name, TRIM(full_name) AS trimmed_name 
+FROM users;
+
+-- Using date/time functions
+
+-- TIME(): Extract just the time portion from the signup_date
+SELECT full_name, TIME(signup_date) AS signup_time 
+FROM users;
+
+-- DATETIME(): Extract the full date and time
+SELECT full_name, DATETIME(signup_date) AS signup_datetime 
+FROM users;
+
+-- JULIANDAY(): Convert the signup_date to the Julian day number
+SELECT full_name, JULIANDAY(signup_date) AS julian_day 
+FROM users;
+
+-- STRFTIME(): Format the signup_date to display just the year and month
+SELECT full_name, STRFTIME('%Y-%m', signup_date) AS signup_year_month 
+FROM users;
+
+-- STRFTIME(): Display the day of the week for the signup date
+SELECT full_name, STRFTIME('%w', signup_date) AS day_of_week 
+FROM users;

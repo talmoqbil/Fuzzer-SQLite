@@ -1,0 +1,17 @@
+-- Seed 17: Partial Indexes and UNIQUE Constraints
+CREATE TABLE orders (
+    order_id INTEGER PRIMARY KEY,
+    customer_id INTEGER,
+    product_id INTEGER,
+    order_date DATE
+);
+
+INSERT INTO orders (customer_id, product_id, order_date) VALUES
+(1, 101, '2023-09-01'),
+(2, 102, '2023-09-02'),
+(1, 103, '2023-09-03');
+
+-- Create a unique index on customer_id and product_id with a condition (Partial Index)
+CREATE UNIQUE INDEX idx_unique_order
+ON orders (customer_id, product_id)
+WHERE order_date >= '2023-09-01';

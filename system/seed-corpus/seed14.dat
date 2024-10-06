@@ -1,0 +1,21 @@
+-- Seed 14: Creating tables with ON DELETE CASCADE and DEFERRABLE constraints
+CREATE TABLE parent (
+    parent_id INTEGER PRIMARY KEY, 
+    parent_name TEXT
+);
+
+CREATE TABLE child (
+    child_id INTEGER PRIMARY KEY, 
+    parent_id INTEGER,
+    FOREIGN KEY (parent_id) REFERENCES parent(parent_id) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+
+-- Insert data into the parent and child tables
+INSERT INTO parent (parent_name) VALUES ('John Doe'), ('Jane Smith');
+INSERT INTO child (parent_id) VALUES (1), (1), (2);
+
+-- Deleting a parent record and showing that children are also deleted due to CASCADE
+DELETE FROM parent WHERE parent_id = 1;
+
+-- Verify the result in the child table
+SELECT * FROM child;

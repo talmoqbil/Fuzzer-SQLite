@@ -1,0 +1,31 @@
+-- Seed 11: Creating two tables for complex join and CTE examples
+CREATE TABLE orders (
+    order_id INTEGER PRIMARY KEY, 
+    customer_id INTEGER, 
+    order_total REAL
+);
+
+CREATE TABLE customers (
+    customer_id INTEGER PRIMARY KEY, 
+    customer_name TEXT
+);
+
+INSERT INTO customers (customer_id, customer_name) 
+VALUES (1, 'Alice'), (2, 'Bob'), (3, 'Charlie');
+
+INSERT INTO orders (order_id, customer_id, order_total) 
+VALUES (1, 1, 150.50), (2, 1, 200.00), (3, 2, 300.00), (4, 3, 100.00), (5, 2, 50.00);
+
+-- CTE example to calculate total orders per customer
+WITH total_orders AS (
+    SELECT customer_id, SUM(order_total) AS total_spent
+    FROM orders
+    GROUP BY customer_id
+)
+SELECT customer_name, total_spent 
+FROM customers
+JOIN total_orders ON customers.customer_id = total_orders.customer_id;
+
+-- DISTINCT to find unique customer IDs who have placed orders
+SELECT DISTINCT customer_id 
+FROM orders;

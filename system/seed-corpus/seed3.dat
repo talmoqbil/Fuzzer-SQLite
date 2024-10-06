@@ -1,0 +1,66 @@
+-- Seed 3: Complex join query with different data
+CREATE TABLE students (
+    student_id INTEGER PRIMARY KEY, 
+    student_name TEXT, 
+    enrollment_date DATE DEFAULT '2023-01-01'  -- Set a default enrollment date
+);
+
+CREATE TABLE courses (
+    course_id INTEGER PRIMARY KEY, 
+    course_name TEXT
+);
+
+CREATE TABLE enrollments (
+    student_id INTEGER, 
+    course_id INTEGER, 
+    grade TEXT DEFAULT 'N/A',  -- Set default grade value
+    PRIMARY KEY (student_id, course_id)
+);
+
+INSERT INTO students (student_name) 
+VALUES ('John'), ('Emma'), ('Sophia');
+
+INSERT INTO courses (course_name) 
+VALUES ('Mathematics'), ('Physics'), ('Chemistry');
+
+INSERT INTO enrollments (student_id, course_id, grade) 
+VALUES 
+(1, 1, 'A'), 
+(1, 2, 'B'), 
+(2, 1, 'A'),
+(2, 3, 'C'),
+(3, 2, 'A');
+
+-- INNER JOIN: Select students who are enrolled in any course
+SELECT students.student_name, courses.course_name, enrollments.grade
+FROM students
+INNER JOIN enrollments ON students.student_id = enrollments.student_id
+INNER JOIN courses ON enrollments.course_id = courses.course_id;
+
+-- NATURAL JOIN: Select students who are enrolled in any course (Assumes columns with same names: student_id, course_id)
+SELECT student_name, course_name, grade
+FROM students
+NATURAL JOIN enrollments
+NATURAL JOIN courses;
+
+-- LEFT JOIN: Select all students, even if they are not enrolled in any course
+SELECT students.student_name, courses.course_name, enrollments.grade
+FROM students
+LEFT JOIN enrollments ON students.student_id = enrollments.student_id
+LEFT JOIN courses ON enrollments.course_id = courses.course_id;
+
+-- FULL OUTER JOIN equivalent in SQLite using UNION: Select all students and courses, even if there are no matches
+SELECT students.student_name, courses.course_name, enrollments.grade
+FROM students
+LEFT JOIN enrollments ON students.student_id = enrollments.student_id
+LEFT JOIN courses ON enrollments.course_id = courses.course_id
+UNION
+SELECT students.student_name, courses.course_name, enrollments.grade
+FROM courses
+LEFT JOIN enrollments ON courses.course_id = enrollments.course_id
+LEFT JOIN students ON enrollments.student_id = students.student_id;
+
+-- CROSS JOIN: Get the Cartesian product of students and courses (all possible pairs)
+SELECT students.student_name, courses.course_name
+FROM students
+CROSS JOIN courses;

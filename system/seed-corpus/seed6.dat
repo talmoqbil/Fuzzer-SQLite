@@ -1,0 +1,47 @@
+-- Seed 6: Complex operations using IN, EXISTS, UPDATE, and DELETE
+
+CREATE TABLE department (
+    dept_id INTEGER PRIMARY KEY, 
+    dept_name TEXT
+);
+
+CREATE TABLE employee (
+    emp_id INTEGER PRIMARY KEY, 
+    emp_name TEXT, 
+    salary REAL, 
+    hire_date DATE, 
+    dept_id INTEGER
+);
+
+INSERT INTO department (dept_name) 
+VALUES ('HR'), ('Engineering'), ('Sales');
+
+INSERT INTO employee (emp_name, salary, hire_date, dept_id) 
+VALUES 
+('Alice', 60000, '2019-06-15', 1), 
+('Bob', 75000, '2018-03-22', 2), 
+('Charlie', 90000, '2021-05-10', 2), 
+('Diana', 55000, '2017-08-30', 3), 
+('Eve', 80000, '2020-01-25', 3);
+
+– Query using IN (Get employees in the Engineering department)
+SELECT emp_name 
+FROM employee 
+WHERE dept_id IN (SELECT dept_id FROM department WHERE dept_name = 'Engineering');
+
+-- Query using EXISTS (Get employees in the HR department)
+SELECT emp_name 
+FROM employee 
+WHERE EXISTS (SELECT 1 FROM department WHERE dept_name = 'HR' AND dept_id = employee.dept_id);
+
+-- Updating multiple rows based on a condition (Increase salary by 10% for employees hired before 2020)
+UPDATE employee 
+SET salary = salary * 1.1 
+WHERE hire_date < '2020-01-01';
+
+-- Deleting rows based on conditions (Delete employees with salary below 40000 after the update)
+DELETE FROM employee 
+WHERE salary < 40000;
+
+SELECT * FROM employee;
+

@@ -1,0 +1,24 @@
+-- Seed13: Creating a temporary table for session-specific operations
+CREATE TEMPORARY TABLE temp_sales (
+    temp_sale_id INTEGER PRIMARY KEY, 
+    item TEXT, 
+    sale_date DATE
+);
+
+INSERT INTO temp_sales (item, sale_date) 
+VALUES ('Laptop', '2024-01-15'), ('Smartphone', '2024-01-17');
+
+-- Using IF NOT EXISTS to ensure table creation only if it doesn’t exist
+CREATE TABLE IF NOT EXISTS permanent_sales (
+    sale_id INTEGER PRIMARY KEY, 
+    item TEXT, 
+    sale_date DATE
+);
+
+INSERT INTO permanent_sales (item, sale_date) 
+VALUES ('Tablet', '2024-01-18');
+
+-- Use DATE functions to calculate the difference between dates
+SELECT item, sale_date, 
+       JULIANDAY('now') - JULIANDAY(sale_date) AS days_since_sale
+FROM permanent_sales;

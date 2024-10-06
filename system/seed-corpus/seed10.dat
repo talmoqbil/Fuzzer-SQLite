@@ -1,0 +1,12 @@
+-- Seed 10: Create a virtual table for full-text search
+CREATE VIRTUAL TABLE documents USING fts5(title, content);
+
+INSERT INTO documents (title, content) 
+VALUES ('SQLite Tutorial', 'SQLite is a C-language library that implements a small, fast, self-contained SQL database engine.'), 
+('Full-Text Search', 'SQLite provides a full-text search engine through its FTS5 extension.');
+
+-- Query using full-text search
+SELECT title FROM documents WHERE documents MATCH 'SQLite';
+
+-- Query using full-text search with multiple keywords
+SELECT title FROM documents WHERE documents MATCH 'SQLite OR search';

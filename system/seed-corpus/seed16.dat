@@ -1,0 +1,51 @@
+-- Seed 16: Create a table with JSON data
+-- Create a table to store products with JSON data
+CREATE TABLE products (
+    product_id INTEGER PRIMARY KEY, 
+    product_info TEXT  -- JSON data stored as text
+);
+
+-- Insert JSON data into the products table
+INSERT INTO products (product_info) 
+VALUES 
+('{"name": "Laptop", "price": 1500, "features": {"ram": "16GB", "storage": "512GB SSD"}}'),
+('{"name": "Smartphone", "price": 800, "features": {"ram": "8GB", "storage": "128GB"}}'),
+('{"name": "Tablet", "price": 400, "features": {"ram": "4GB", "storage": "64GB"}}');
+
+-- Extract JSON values using SQLite's JSON functions
+SELECT 
+    json_extract(product_info, '$.name') AS product_name, 
+    json_extract(product_info, '$.features.ram') AS ram_size
+FROM products;
+
+-- Create an index on the JSON field for faster querying
+CREATE INDEX idx_product_info ON products (json_extract(product_info, '$.name'));
+
+-- Query using the index to find products with the name 'Laptop'
+SELECT json_extract(product_info, '$.name') AS product_name 
+FROM products
+WHERE json_extract(product_info, '$.name') = 'Laptop';
+
+-- Drop the index when it's no longer needed
+DROP INDEX IF EXISTS idx_product_info;
+
+-- JSON Aggregation: Group products based on price category and aggregate features into a JSON array
+SELECT 
+    CASE 
+        WHEN json_extract(product_info, '$.price') > 1000 THEN 'High-End'
+        WHEN json_extract(product_info, '$.price') BETWEEN 500 AND 1000 THEN 'Mid-Range'
+        ELSE 'Budget'
+    END AS price_category,
+    json_group_array(json_extract(product_info, '$.features')) AS features
+FROM products
+GROUP BY price_category;
+
+-- JSON Subquery: Find the most expensive product and extract its features
+SELECT 
+    json_extract(product_info, '$.name') AS product_name, 
+    json_extract(product_info, '$.price') AS price, 
+    json_extract(product_info, '$.features') AS features
+FROM products
+WHERE json_extract(product_info, '$.price') = (
+    SELECT MIN(json_extract(product_info, '$.price')) FROM products
+);

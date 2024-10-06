@@ -1,0 +1,56 @@
+-- Seed 15: Create a table to demonstrate TRIGGER usage
+CREATE TABLE inventory (
+    item_id INTEGER PRIMARY KEY, 
+    item_name TEXT, 
+    stock INTEGER
+);
+
+INSERT INTO inventory (item_name, stock) 
+VALUES ('Laptop', 10), ('Phone', 15), ('Headphones', 5);
+
+-- Create a deletion log table to log item deletions
+CREATE TABLE deletion_log (
+    log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    item_name TEXT, 
+    deletion_date DATE
+);
+
+-- Trigger to log when an item is deleted from the inventory
+CREATE TRIGGER log_item_deletion
+AFTER DELETE ON inventory
+BEGIN
+    INSERT INTO deletion_log (item_name, deletion_date)
+    VALUES (OLD.item_name, DATE('now'));
+END;
+
+-- Trigger to ensure stock remains non-negative before updating
+CREATE TRIGGER prevent_negative_stock
+BEFORE UPDATE ON inventory
+FOR EACH ROW
+WHEN NEW.stock < 0
+BEGIN
+    SELECT RAISE(FAIL, 'Stock cannot be negative.');
+END;
+
+-- Testing the triggers with UPDATE and DELETE
+UPDATE inventory SET stock = stock - 5 WHERE item_name = 'Laptop';  -- Successful update
+DELETE FROM inventory WHERE item_name = 'Headphones';  -- Logs the deletion
+
+-- View the remaining inventory and check the deletion log
+SELECT * FROM inventory;
+SELECT * FROM deletion_log;
+
+-- Drop the 'log_item_deletion' trigger when it's no longer needed
+DROP TRIGGER IF EXISTS log_item_deletion;
+
+-- Drop the 'prevent_negative_stock' trigger
+DROP TRIGGER IF EXISTS prevent_negative_stock;
+
+-- Testing the triggers after dropping them
+-- Now, the following delete won't be logged, and updates won't fail for negative stock
+DELETE FROM inventory WHERE item_name = 'Phone';
+UPDATE inventory SET stock = -1 WHERE item_name = 'Laptop';
+
+-- View the updated inventory and check the deletion log again
+SELECT * FROM inventory;
+SELECT * FROM deletion_log;
