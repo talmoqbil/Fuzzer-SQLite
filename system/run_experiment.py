@@ -36,7 +36,7 @@ def remove_file_if_exists(file_path):
 
 # Main experiment class that support all type of fuzzers
 class Experiment:
-    def __init__(self, fuzzer_type, db_file, corpus_path = None, feedback_enabled = False, clean_database = False):
+    def __init__(self, fuzzer_type, db_file, corpus_path = None, feedback_enabled = False, clean_database = False, use_asan = False):
         if fuzzer_type == "grammar_based":
             self.fuzzer = MyGrammarFuzzer()
         elif fuzzer_type == "mutation_based":
@@ -69,6 +69,7 @@ class Experiment:
         if db_file == None:
             db_file = "empty.db"
 
+        self.use_asan = use_asan
         self.db_file = db_file
         self.sqlite3 = self.find_sqlite3_executable()
         self.feedback_enabled = feedback_enabled
@@ -76,9 +77,14 @@ class Experiment:
         self.bug_found = 0
 
     def find_sqlite3_executable(self):
+        if self.use_asan:
+            sqlite3_file = "sqlite3-asan"
+        else:
+            sqlite3_file = "sqlite3"
+        
         # Try to find sqlite3 in the current working directory or the script's directory
         script_directory = os.path.dirname(os.path.abspath(__file__))
-        script_sqlite3_path = os.path.join(script_directory, "sqlite3-asan")
+        script_sqlite3_path = os.path.join(script_directory, sqlite3_file)
 
         if os.path.exists(script_sqlite3_path):
             return script_sqlite3_path
@@ -180,6 +186,7 @@ def main():
     parser.add_argument('--fuzzer_type', type=str, help='Type of fuzzer')
     parser.add_argument('--feedback_enabled', action="store_true", help='Enable coverage feedback (optinal)')
     parser.add_argument('--clean_database', action="store_true", help='Clean the database after each run (optional)')
+    parser.add_argument('--use_asan', action="store_true", help='Use AddressSanitizer')
     args = parser.parse_args()
     runs = args.runs
     plot_every_x = args.plot_every_x
@@ -188,11 +195,12 @@ def main():
     fuzzer_type=args.fuzzer_type
     feedback_enabled=args.feedback_enabled
     clean_database=args.clean_database
+    use_asan=args.use_asan
     
     if feedback_enabled:
         plot_every_x = 1
 
-    experiment = Experiment(fuzzer_type, db_file, corpus, feedback_enabled, clean_database)
+    experiment = Experiment(fuzzer_type, db_file, corpus, feedback_enabled, clean_database, use_asan)
     experiment.generate_and_run_k_plot_coverage(runs, plot_every_x)
 
 if __name__ == "__main__":
