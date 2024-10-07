@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -fprofile-arcs -ftest-coverage
 LIBS = -lpthread -ldl -lm
 
-all: sqlite3
+all: sqlite3 sqlite3-asan
 
 sqlite3: shell.c sqlite3.c
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
