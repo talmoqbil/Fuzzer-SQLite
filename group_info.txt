@@ -1,5 +1,3 @@
-Group Number: 1
-
 Member-1:
 - Name: Yu Ming Soh
 - Student ID: 1551965

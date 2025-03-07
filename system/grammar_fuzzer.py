@@ -15,4 +15,9 @@ class MyGrammarFuzzer:
 
     def fuzz(self) -> str:
         # This function may be changed, but the signature should not change.
-        return self.fuzzer.fuzz()
+        fuzzed_query = self.fuzzer.fuzz()
+        
+        # Print out the generated SQL query
+        print("Fuzzed SQL statement:", fuzzed_query)
+        
+        return fuzzed_query
