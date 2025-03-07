@@ -55,12 +55,3 @@ Coverage reports are visualized in images/gcovr.png and images/plot.png.
 
 ## Contributors
 This project was developed as part of a collaborative security research effort, and the contributors are listed in group_info.
-
-
-### 2. 
-
-### 3. Manual Setup 
-pip install -r requirements.txt
-
-
-## Running the Fuzzer
